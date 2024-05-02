@@ -1,9 +1,9 @@
-import { ConflictException, UsePipes } from '@nestjs/common';
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { hash } from 'bcryptjs';
-import { string, z } from 'zod';
-import { ZodValidationPipe } from 'src/pipes/zod-validations-pipe';
+import { ConflictException, UsePipes } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
+import { hash } from "bcryptjs";
+import { string, z } from "zod";
+import { ZodValidationPipe } from "src/pipes/zod-validations-pipe";
 
 const createAccountBodySchema = z.object({
   name: z.string(),
@@ -12,7 +12,7 @@ const createAccountBodySchema = z.object({
 });
 
 type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>;
-@Controller('/accounts')
+@Controller("/accounts")
 export class CreateAccountController {
   constructor(private prisma: PrismaService) {}
 
@@ -29,7 +29,7 @@ export class CreateAccountController {
     });
 
     if (userWithSameEmail) {
-      throw new ConflictException('User with same e-mail address exists ');
+      throw new ConflictException("User with same e-mail address exists ");
     }
 
     const hanshPassword = await hash(password, 8);
