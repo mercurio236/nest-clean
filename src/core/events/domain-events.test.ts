@@ -8,8 +8,8 @@ class CustomAggregateCreated implements DomainEvent {
   private aggregate: CustomAggregate;
 
   constructor(aggregate: CustomAggregate) {
-    this.ocurredAt = aggregate;
-    this.aggregate = new Date();
+    this.ocurredAt = new Date();
+    this.aggregate = aggregate;
   }
 
   public getAggregateId(): UniqueEntityID {

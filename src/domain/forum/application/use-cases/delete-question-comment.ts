@@ -10,7 +10,7 @@ interface DeleteQuestionCommitUseCaseRequest {
 
 type DeleteQuestionCommitUseCaseResponse = Either<
   ResourceNotFoundError | NotAllowedError,
-  {}
+  null
 >;
 
 export class DeleteQuestionCommitUseCase {
@@ -33,6 +33,6 @@ export class DeleteQuestionCommitUseCase {
 
     await this.questionCommentsRepository.delete(questionComment);
 
-    return right({});
+    return right(null);
   }
 }
