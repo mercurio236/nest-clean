@@ -2,24 +2,58 @@ import { PaginationParams } from "@/core/repositories/pagination-params";
 import { AnswerCommentsRepository } from "@/domain/forum/application/repositories/answer-comments-repository";
 import { AnswerComment } from "@/domain/forum/enterprise/entities/answer-comment";
 import { Injectable } from "@nestjs/common";
+import { PrismaAnswerCommentMapper } from "../mappers/prisma-anwer-comment-mapper";
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class PrismaAnswerCommentsRepository
   implements AnswerCommentsRepository
 {
-  findById(id: string): Promise<AnswerComment | null> {
-    throw new Error("Method not implemented.");
+  constructor(private prisma: PrismaService) {}
+
+  async findById(id: string): Promise<AnswerComment | null> {
+    const answerComment = await this.prisma.comment.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!answerComment) {
+      return null;
+    }
+
+    return PrismaAnswerCommentMapper.toDomain(answerComment);
   }
-  findManyByAnswerId(
+
+  async findManyByAnswerId(
     answerId: string,
-    params: PaginationParams,
+    { page }: PaginationParams,
   ): Promise<AnswerComment[]> {
-    throw new Error("Method not implemented.");
+    const answerComments = await this.prisma.comment.findMany({
+      where: {
+        answerId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 20, //quando itens eu quero
+      skip: (page - 1) * 20, // quando eu quero pular
+    });
+
+    return answerComments.map(PrismaAnswerCommentMapper.toDomain);
   }
-  create(answer: AnswerComment): Promise<void> {
-    throw new Error("Method not implemented.");
+  async create(answer: AnswerComment): Promise<void> {
+    const data = PrismaAnswerCommentMapper.toPrisma(answer);
+    await this.prisma.comment.create({
+      data,
+    });
   }
-  delete(answer: AnswerComment): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async delete(answer: AnswerComment): Promise<void> {
+    await this.prisma.comment.delete({
+      where: {
+        id: answer.id.toString(),
+      },
+    });
   }
 }
